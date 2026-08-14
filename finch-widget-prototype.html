@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#6f9155">
 <title>Finch Widget Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; background:#000; overflow:hidden; overscroll-behavior:none; }
+  html,body { height:100%; background:#6f9155; overflow:hidden; overscroll-behavior:none; }
   body { display:flex; align-items:center; justify-content:center; font-family:'Rubik',-apple-system,sans-serif; }
 
   /* ---- phone canvas: 375 x 815 design space, scaled to fit ---- */
@@ -177,6 +178,9 @@
   </div>
 
   <div id="dots"><span class="on"></span><span></span></div>
+  <label id="haptic-label" style="position:fixed; top:-100px; left:-100px; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;">
+    <input id="haptic-switch" type="checkbox" switch>
+  </label>
 </div>
 
 <script>
@@ -255,6 +259,15 @@
     if (Math.abs(dx) > 90) setPage(page + (dx < 0 ? 1 : -1)); else setPage(page);
   });
 
+  // ---- haptic feedback ----
+  // iOS Safari: toggling a native switch control fires the system haptic tick.
+  // Android: navigator.vibrate.
+  const hapticLabel = document.getElementById('haptic-label');
+  function haptic() {
+    try { hapticLabel.click(); } catch (e) {}
+    if (navigator.vibrate) navigator.vibrate(10);
+  }
+
   // ---- mood tap interaction ----
   const w2x2 = document.querySelector('.w2x2');
   const capIcon = w2x2.querySelector('.cap-icon');
@@ -277,7 +290,7 @@
         const names = { grumpy:'Bad', sad:'Meh', neutral:'Okay', bigsmile:'Good', happy:'Great' };
         w4.querySelector('.subtext').textContent = `Mood logged: ${names[mood]}`;
       }
-      if (navigator.vibrate) navigator.vibrate(12);
+      haptic();
     });
   });
 
@@ -285,7 +298,7 @@
   w2x2.querySelector('.state.captured').addEventListener('click', () => {
     if (Math.abs(dx) > 8) return;
     w2x2.classList.remove('logged');
-    if (navigator.vibrate) navigator.vibrate(8);
+    haptic();
   });
 </script>
 </body>
