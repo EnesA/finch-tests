@@ -138,6 +138,22 @@
   }
   #dots span { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.45); transition:background .2s; }
   #dots span.on { background:rgba(255,255,255,.95); }
+
+  /* swipe hint */
+  #swipe-hint {
+    position:absolute; left:50%; bottom:170px; z-index:3;
+    display:flex; align-items:center; gap:6px;
+    background:rgba(20,30,20,.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    color:#fff; font-size:13px; font-weight:500;
+    padding:7px 14px; border-radius:100px;
+    pointer-events:none; transition:opacity .4s ease;
+    animation:nudge 1.6s ease-in-out infinite;
+  }
+  #swipe-hint.hide { opacity:0; }
+  @keyframes nudge {
+    0%, 100% { transform:translateX(calc(-50% - 4px)); }
+    50%      { transform:translateX(calc(-50% + 4px)); }
+  }
 </style>
 </head>
 <body>
@@ -192,6 +208,7 @@
   </div>
 
   <div id="dots"><span class="on"></span><span></span></div>
+  <div id="swipe-hint"><span>Swipe</span><span>&#8594;</span></div>
   <label id="haptic-label" style="position:fixed; top:-100px; left:-100px; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;">
     <input id="haptic-switch" type="checkbox" switch>
   </label>
@@ -224,7 +241,9 @@
   }
 
   function setPage(p, animate = true) {
-    page = Math.max(0, Math.min(1, p));
+    const next = Math.max(0, Math.min(1, p));
+    if (next !== page) document.getElementById('swipe-hint').classList.add('hide');
+    page = next;
     applyX(-page * 375, animate);
     dots.forEach((d, i) => d.classList.toggle('on', i === page));
   }
