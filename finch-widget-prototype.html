@@ -17,7 +17,7 @@
   #phone {
     position:relative; width:375px; height:815px;
     transform-origin:center center; overflow:hidden;
-    border-radius:24px; background:#7da05e;
+    background:#7da05e;
   }
   #wp1 { position:absolute; inset:0; }
   .wallpaper { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
@@ -183,10 +183,14 @@
   // ---- scale phone canvas to fit screen ----
   const phone = document.getElementById('phone');
   function fit() {
-    const s = Math.min(innerWidth / 375, innerHeight / 815);
+    const vw = window.visualViewport ? visualViewport.width : innerWidth;
+    const vh = window.visualViewport ? visualViewport.height : innerHeight;
+    // cover: fill the whole screen (tiny crop on mismatched aspect ratios)
+    const s = Math.max(vw / 375, vh / 815);
     phone.style.transform = `scale(${s})`;
   }
   fit(); addEventListener('resize', fit);
+  if (window.visualViewport) visualViewport.addEventListener('resize', fit);
 
   // ---- swipe anywhere on the background to flick 2x2 <-> 4x2 ----
   const track = document.getElementById('track');
